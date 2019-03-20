@@ -24,6 +24,60 @@ class ListViewController : UITableViewController, UIPickerViewDelegate, UIPicker
             self.defaultPlist = NSDictionary(contentsOfFile: defaultPlistPath)
         }
         
+        let picker = UIPickerView()
+        picker.delegate = self
+        self.account.inputView = picker
+        
+        let toolbar = UIToolbar()
+        toolbar.frame = CGRect(x: 0, y: 0, width: 0, height: 35)
+        toolbar.barTintColor = UIColor.lightGray
+        self.account.inputAccessoryView = toolbar
+        
+        let done = UIBarButtonItem()
+        done.title = "DONE"
+        done.target = self
+        done.action = #selector(pickDone(_:))
+        
+        let flewSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: noErr, action: nil)
+        
+        let new = UIBarButtonItem()
+        new.title = "NEW"
+        new.target = self
+        new.action = #selector(newAccount(_:))
+        
+        toolbar.setItems([new, flewSpace, done], animated: true)
+        
+        let addBtn = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(newAccount(_:)))
+        self.navigationItem.rightBarButtonItems = [addBtn]
+        
+        let plist = UserDefaults.standard
+        
+        self.name.text = plist.string(forKey: "name")
+        self.gender.selectedSegmentIndex = plist.integer(forKey: "gender")
+        self.married.isOn = plist.bool(forKey: "married")
+        
+        let accountlist = plist.array(forKey: "accountList") as? [String] ?? [String]()
+        self.accountList = accountlist
+        
+        if let val = plist.string(forKey: "selectedAccount") {
+            self.account.text = val
+            
+            let customPlist = "\(val).plist"
+            let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+            let path = paths[0] as NSString
+            let plist = path.strings(byAppendingPaths: [customPlist]).first!
+            let data = NSDictionary(contentsOfFile: plist)
+            
+            self.name.text = data?["name"] as? String
+            self.gender.selectedSegmentIndex = data?["gender"] as? Int ?? 00
+            self.married.isOn = data?["married"] as? Bool ?? false
+        }
+        
+        if (self.account.text?.isEmpty)! {
+            self.account.placeholder = "등록된 계정이 없습니다"
+            self.gender.isEnabled = false
+            self.married.isEnabled = false
+        }
     }
     
     @IBAction func changeGender(_ sender: UISegmentedControl) {
@@ -76,6 +130,8 @@ class ListViewController : UITableViewController, UIPickerViewDelegate, UIPicker
                 
                 data.setValue(val, forKey: "name")
                 data.write(toFile: plist, atomically: true)
+                
+                self.name.text = val 
             })
             self.present(alert, animated: true, completion: nil)
         }
@@ -123,7 +179,6 @@ class ListViewController : UITableViewController, UIPickerViewDelegate, UIPicker
                 plist.set(val, forKey: "selectedAccount")
                 plist.synchronize()
                 
-                self.name.text = val 
             }
         })
         self.present(alert, animated: true, completion: nil)
