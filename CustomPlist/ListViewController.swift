@@ -101,6 +101,32 @@ class ListViewController : UITableViewController, UIPickerViewDelegate, UIPicker
     @objc func newAccount(_ sender : Any) {
         self.view.endEditing(true)
         
+        let alert = UIAlertController(title: "새 계정을 입력하세요", message: nil, preferredStyle: .alert)
+        
+        alert.addTextField() {
+            $0.placeholder = "abc@gmail.com"
+        }
+        
+        alert.addAction(UIAlertAction(title: "OK", style: .default) {(_) in
+            
+            if let val = alert.textFields?[0].text {
+                
+                self.accountList.append(val)
+                self.account.text = val
+                
+                self.name.text = ""
+                self.gender.selectedSegmentIndex = 0
+                self.married.isOn = false
+                
+                let plist = UserDefaults.standard
+                plist.set(self.accountList, forKey: "accountList")
+                plist.set(val, forKey: "selectedAccount")
+                plist.synchronize()
+                
+                self.name.text = val 
+            }
+        })
+        self.present(alert, animated: true, completion: nil)
     }
 
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
