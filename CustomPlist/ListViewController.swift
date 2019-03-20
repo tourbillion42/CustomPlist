@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ListViewController : UITableViewController {
+class ListViewController : UITableViewController, UIPickerViewDelegate, UIPickerViewDataSource {
 
     @IBOutlet var account: UITextField!
     @IBOutlet var name: UILabel!
@@ -26,5 +26,26 @@ class ListViewController : UITableViewController {
     @IBAction func changeMarried(_ sender: UISwitch ) {
      
     }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+    }
+
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        <#code#>
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        <#code#>
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        <#code#>
+    }
+    
 }
 
