@@ -56,6 +56,29 @@ class ListViewController : UITableViewController, UIPickerViewDelegate, UIPicker
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        if indexPath.row == 1 && (self.account.text?.isEmpty)! == false {
+            
+            let alert = UIAlertController(title: nil, message: "put your name", preferredStyle: .alert)
+            
+            alert.addTextField() {
+                $0.text = self.name.text
+            }
+            
+            alert.addAction(UIAlertAction(title: "OK", style: .default){(_) in
+                
+                let val = alert.textFields?[0].text
+                let customPlist = "\(self.account.text!).plist"
+                
+                let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+                let path = paths[0] as NSString
+                let plist = path.strings(byAppendingPaths: [customPlist]).first!
+                let data = NSMutableDictionary(contentsOfFile: plist) ?? NSMutableDictionary(dictionary: self.defaultPlist)
+                
+                data.setValue(val, forKey: "name")
+                data.write(toFile: plist, atomically: true)
+            })
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
