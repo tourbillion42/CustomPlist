@@ -80,6 +80,28 @@ class ListViewController : UITableViewController, UIPickerViewDelegate, UIPicker
             self.present(alert, animated: true, completion: nil)
         }
     }
+    
+    @objc func pickDone(_ sender : Any) {
+        self.view.endEditing(true)
+        
+        if let _account = self.account.text {
+            
+            let customPlist = "\(_account).plist"
+            let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+            let path = paths[0] as NSString
+            let plist = path.strings(byAppendingPaths: [customPlist]).first!
+            let data = NSDictionary(contentsOfFile: plist)
+            
+            self.name.text = data?["name"] as? String
+            self.gender.selectedSegmentIndex = data?["gender"] as? Int ?? 00
+            self.married.isOn = data?["married"] as? Bool ?? false
+        }
+    }
+    
+    @objc func newAccount(_ sender : Any) {
+        self.view.endEditing(true)
+        
+    }
 
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
